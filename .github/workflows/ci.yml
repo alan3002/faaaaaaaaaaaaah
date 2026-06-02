@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'app/**'  # Only trigger when files inside the app directory change
 
 jobs:
   build-test-scan-push:
@@ -20,24 +18,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      # 💡 Explicitly move into the app folder before running pip
       - name: Install Dependencies
-        run: |
-          cd app
-          pip install -r requirements.txt
+        working-directory: app
+        run: pip install -r requirements.txt
 
-      # 💡 Explicitly move into the app folder before running tests
       - name: Run Unit Tests
-        run: |
-          cd app
-          pytest
+        working-directory: app
+        run: pytest
 
-      # 💡 Pass the folder context directly to the build command
       - name: Build Docker Image
-        run: |
-          docker build -t fastapi-devops ./app
+        run: docker build -t fastapi-devops ./app
 
-      - name: Scan Docker Image with Trivy
+      - name: Scan Docker Image (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: fastapi-devops
@@ -50,7 +42,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Tag Docker Image
