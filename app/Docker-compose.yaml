@@ -1,0 +1,7 @@
+services:
+  web-app:
+    build: .
+    container_name: fastapi-compose-container
+    ports:
+      - "8040:8000"
+    restart: unless-stopped
