@@ -8,5 +8,5 @@ def test_home():
 
     assert response.status_code == 200
     assert response.json() == {
-        "message": "DevOps Project Running"
+        "message": "DevOps Project Running-sucess"
     }
